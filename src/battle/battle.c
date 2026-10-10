@@ -3118,7 +3118,38 @@ static void func_800AE764(s32 mask, s32 arg1, s32 arg2) {
     g_BattleState.scriptOpponentNonPetrifiedMask = result;
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800AE82C);
+void func_800AE82C(void) {
+    s32 masks[16];
+    s32 elements = g_CurrentAction->elements;
+    s32 result = 0;
+    s32 statusMask = 0;
+    s32 i;
+    s32 unkC;
+    s32 unk84;
+
+    for (i = 0; i < 3; i++) {
+        statusMask |= g_CurrentAction->unk80[i];
+    }
+
+    unkC = g_CurrentAction->unkC != 4;
+    unk84 = g_CurrentAction->unk80[1] & 1;
+    func_800AE42C(elements, statusMask, g_CurrentAction->targetId, masks, unkC, unk84);
+
+    if (g_CurrentAction->power != 0 && masks[13] != 0) {
+        masks[13] = 0;
+    }
+
+    for (i = 0; i < LEN(masks); i++) {
+        if (masks[i] != 0) {
+            result |= 1 << (i % 8);
+        }
+    }
+
+    g_CurrentAction->unk230 = result & 0xFFFF;
+    if (!(g_CurrentAction->unk6C & 0x80)) {
+        g_CurrentAction->unk230 = 0;
+    }
+}
 
 void BattleRecalcUnitSpeed(int index);
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", BattleRecalcUnitSpeed);
