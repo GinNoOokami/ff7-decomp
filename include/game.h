@@ -559,29 +559,29 @@ typedef struct {
     /* 0x0F8 */ s32 unkF8;
     /* 0x0FC */ s32 unkFC;
     /* 0x100 */ s32 unk100[0x40];
-    /* 0x200 */ void* unk200;
-    /* 0x204 */ void* unk204;
+    /* 0x200 */ struct BattleTurnWork* turnWork;
+    /* 0x204 */ struct BattlePartyWork* partyWork;
     /* 0x208 */ s32 targetId;
-    /* 0x20C */ s32 unk20C;
+    /* 0x20C */ s32 targetEnemyId;
     /* 0x210 */ s32 targetDefense;
     /* 0x214 */ s32 tmpDamage;
     /* 0x218 */ s32 unk218;
     /* 0x21C */ s32 unk21C;
     /* 0x220 */ s32 damageFlags;
-    /* 0x224 */ s32 unk224;
-    /* 0x228 */ u32 unk228;
-    /* 0x22C */ s32 unk22C;
-    /* 0x230 */ s32 unk230;
+    /* 0x224 */ s32 hurtAnimScript;
+    /* 0x228 */ u32 targetStatus;
+    /* 0x22C */ s32 targetProtectionStatus;
+    /* 0x230 */ s32 affinityFlags;
     /* 0x234 */ s32 unk234;
     /* 0x238 */ s32 unk238[3];
     /* 0x244 */ s32 unk244;
     /* 0x248 */ s32 unk248;
     /* 0x24C */ s32 unk24C;
     /* 0x250 */ s32 unk250;
-    /* 0x254 */ s32 unk254;
-    /* 0x258 */ s32 unk258;
-    /* 0x25C */ s32 unk25C;
-    /* 0x260 */ s32 unk260;
+    /* 0x254 */ s32 targetLevel;
+    /* 0x258 */ s32 targetHP;
+    /* 0x25C */ s32 targetMP;
+    /* 0x260 */ s32 attackPercent;
 } Unk800A8D04; // size: 0x264
 
 // Targeting byte shared by weapons, magic, items and battle commands.

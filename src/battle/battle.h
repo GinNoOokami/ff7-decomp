@@ -127,6 +127,17 @@ typedef enum {
 } BattleStatMultIndex;
 
 typedef enum {
+    AFFINITY_DEATH = 0x1,
+    AFFINITY_UNK2 = 0x2,
+    AFFINITY_DOUBLE = 0x4,
+    AFFINITY_UNK8 = 0x8, // Unused?
+    AFFINITY_HALF = 0x10,
+    AFFINITY_NULLIFY = 0x20,
+    AFFINITY_ABSORB = 0x40,
+    AFFINITY_FULL_CURE = 0x80,
+} BattleAffinityFlags;
+
+typedef enum {
     SPRITE_QUAD_FLIP_U = 0x1,
     SPRITE_QUAD_FLIP_V = 0x2,
     SPRITE_QUAD_SEMI_TRANS = 0x100,
@@ -182,7 +193,7 @@ typedef struct {
     /* 0x24 */ u16 enemyId;
     /* 0x26 */ u16 elemAbsorbExtra;
     /* 0x28 */ u16 curMP;
-    /* 0x2A */ s16 maxMP;
+    /* 0x2A */ u16 maxMP;
     /* 0x2C */ u32 curHP;
     /* 0x30 */ u32 maxHP;
     /* 0x34 */ u32 elemHalve;
@@ -276,8 +287,8 @@ typedef struct {
     /* 0x25 */ u8 defense;
     /* 0x26 */ u8 magic;
     /* 0x27 */ u8 magicDef;
-    /* 0x28 */ u8 elementTypes[8];
-    /* 0x30 */ u8 elementRates[8];
+    /* 0x28 */ u8 affinityIds[8];   // which element or status bit (0-63, 0xFF empty)
+    /* 0x30 */ u8 affinityTypes[8]; // 4 = half, 5 = nullify, 6 = absorb
     /* 0x38 */ u8 actionAnimeIdx[16];
     /* 0x48 */ u16 attackID[16];
     /* 0x68 */ u16 cameraMovementIDs[16];
@@ -586,7 +597,7 @@ typedef struct {
     /* 0xE */ u16 clut;  // POLY_FT4 clut halfword
 } BattleSpriteDesc;      // size:0x10
 
-typedef struct {
+typedef struct BattleTurnWork {
     /* 0x00 */ s16 unitSpeed;
     /* 0x02 */ s16 atbIncrement;
     /* 0x04 */ u16 atbGauge; // ATB fill gauge, saturates/compares at 0xFFFF -- unsigned
@@ -631,7 +642,7 @@ typedef struct {
     /* 0x4 */ u8 unk4[2];
 } Unk80166F78; // size: 0x6
 
-typedef struct {
+typedef struct BattlePartyWork {
     /* 0x00 */ SavePartyMember* partyMember;
     /* 0x04 */ u8 limitCount; // inferred: bumped when a Limit Break executes
     /* 0x05 */ u8 limitLevel;
