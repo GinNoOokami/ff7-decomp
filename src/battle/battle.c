@@ -3112,9 +3112,57 @@ void BattleCalcMateriaSlotScore(void) {
     g_CurrentAction->tmpDamage = count * 1111;
 }
 
-void func_800AE42C(s32, s32, s32, s32*, s32, s32);
+// masks: 16 s32 masks, 0..7 elements (bank0), 8..15 statuses (bank1);
+// index = bank * 8 + effect (4 halve, 5 nullify, 6 absorb)
+void func_800AE42C(s32 arg0, s32 arg1, s32 arg2, s32* masks, s32 arg4, s32 arg5) {
+    ActiveCharacterData* charData;
+    s32 i;
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800AE42C);
+    for (i = 0; i < 8; i++) {
+        masks[i] = 0;
+        masks[i + 8] = 0;
+    }
+
+    if (arg2 < NUM_PARTY) {
+        charData = &g_ActiveCharacters[arg2];
+        masks[4] = charData->halvedElements;
+        masks[5] = charData->nullifiedElements;
+        masks[6] = charData->absorbedElements;
+    } else if (arg2 >= START_ENEMY) {
+        SceneEnemy* enemy =
+            &g_BattleSceneContext.enemy[g_BattleData.activeEncounter.formation[arg2 - START_ENEMY].enemyID];
+        for (i = 0; i < sizeof(enemy->elementTypes); i++) {
+            s32 id = enemy->elementTypes[i];
+            s32 effect = enemy->elementRates[i];
+            if (id != 0xFF) {
+                masks[(id / 32) * 8 + effect] |= 1 << (id % 32);
+            }
+        }
+    }
+
+    masks[13] |= BattleGetStatusProtectionMask(arg2, arg4, arg5);
+
+    if (arg4 != 0 && (g_BattleState.combatant[arg2].status & STATUS_SHIELD)) {
+        masks[6] |= 0x1FF;
+        masks[5] |= 0x7E00;
+    }
+
+    masks[6] |= g_BattleState.combatant[arg2].elemAbsorbExtra;
+    masks[5] |= g_BattleState.combatant[arg2].elemImmuneExtra;
+
+    if ((masks[5] & 0x10) || (masks[13] & STATUS_POISON)) {
+        masks[5] |= 0x10;
+        masks[13] |= STATUS_POISON;
+    }
+
+    for (i = 0; i < 8; i++) {
+        masks[i] &= arg0;
+        masks[i + 8] &= arg1;
+        if (i == 5 && masks[13] != arg1) {
+            masks[13] = 0;
+        }
+    }
+}
 
 static s32 func_800AE6C0(s32 arg0, s32 arg1, s32 arg2) {
     s32 masks[2][8];
