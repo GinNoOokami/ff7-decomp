@@ -94,7 +94,7 @@ typedef struct {
     /* 0x7E */ s16 unk7E;
     /* 0x80 */ s16 unk80;
     /* 0x82 */ s16 rank;
-    /* 0x84 */ u8 unk84[0x2];
+    /* 0x84 */ s16 unk84;
     /* 0x86 */ s16 unk86;
     /* 0x88 */ u8 unk88[0x8];
     /* 0x90 */ s16 unk90;
@@ -201,7 +201,7 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ s32 count;
-    /* 0x04 */ u8 unk4[0x4];
+    /* 0x04 */ s32 unk4;
     /* 0x08 */ ChocoboTrackSegment* segments;
     /* 0x0C */ u8 unkC[0x18];
     /* 0x24 */ s16 nTris;
@@ -253,9 +253,6 @@ typedef struct {
     /* 0x7 */ u8 unk7;
 } Unk800B7480;
 
-extern SVECTOR D_800A0000;
-extern VECTOR D_800A0008;
-extern VECTOR D_800A0068;
 extern Unk800B1254 D_800B1254;
 extern s32 D_800B7478;
 extern s32 D_800B733C; // id of the last chocobo
@@ -293,21 +290,24 @@ void ChocoboResetRacerColors(void);
 void ChocoboRaceInit(void);
 void ChocoboInitMusic(void);
 void func_800A18BC(void);
+void func_800A9828(void);
+s32 ChocoboCalcAngle(s16 x, s16 y);
 void func_800A1F40(ChocoboModels* models, s32 arg1);
 void ChocoboDrawTrackTris(void);
 void ChocoboDrawTrackSegments(void);
 void func_800A2BD4(s32 start, s32 end);
+void ChocoboApplyItemEffect(s32 id, s32 effect);
 void func_800A34A8(void);
 void ChocoboUpdateRanking(void);
 void ChocoboSelectRacer(s32);
-void func_800A4888(s32 id);
+void ChocoboUpdateRacer(s32 id);
 void ChocoboSelectRacerAtSegment(s32 id, s32 speed, s32 seg);
 void func_800A6E50(s32);
 void func_800A7CA4(void);
 void func_800A8AE8(void);
 void func_800A9D94(void);
 void func_800AC554(void);
-void ChocoboDrawText(const char* str, s32 len, s32 x, s32 y);
+void ChocoboDrawText(const u8* str, s32 len, s32 x, s32 y);
 void ChocoboDrawFade(void);
 u8* ChocoboModelSetupParts(ChocoboModel* model, u8* buf, s32 arg2);
 u8* func_800AD9D8(ChocoboModelPart*, u8*, s32, s32);
