@@ -177,11 +177,11 @@ typedef struct {
     /* 0x18 */ u16 attackMask;
     /* 0x1A */ u16 attackerMask;
     /* 0x1C */ s32 statusAppliedMask;
-    /* 0x20 */ s16 physDefence;
-    /* 0x22 */ s16 magDefence;
+    /* 0x20 */ u16 physDefence;
+    /* 0x22 */ u16 magDefence;
     /* 0x24 */ u16 enemyId;
     /* 0x26 */ u16 elemAbsorbExtra;
-    /* 0x28 */ s16 curMP;
+    /* 0x28 */ u16 curMP;
     /* 0x2A */ s16 maxMP;
     /* 0x2C */ u32 curHP;
     /* 0x30 */ u32 maxHP;

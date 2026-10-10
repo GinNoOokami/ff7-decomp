@@ -2558,7 +2558,74 @@ void func_800AC6B4(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle", BattleCalcTargStats);
+void BattleCalcTargStats(s32 arg0) {
+    s32 i;
+
+    g_CurrentAction->targetId = arg0;
+    g_CurrentAction->unk20C = -1;
+    g_CurrentAction->unk21C = 0;
+    g_CurrentAction->damageFlags = 0;
+    g_CurrentAction->targetDefense = 0;
+    g_CurrentAction->tmpDamage = 0;
+    g_CurrentAction->unk234 = 0;
+    g_CurrentAction->unk218 = g_CurrentAction->unk90;
+    g_CurrentAction->unk260 = g_CurrentAction->unk3C;
+    g_CurrentAction->unk224 = g_BattleState.combatant[arg0].unk56;
+    g_CurrentAction->unk228 = g_BattleState.combatant[arg0].status;
+    g_CurrentAction->unk254 = g_BattleState.combatant[arg0].level;
+    g_CurrentAction->unk258 = g_BattleState.combatant[arg0].curHP;
+    g_CurrentAction->unk25C = g_BattleState.combatant[arg0].curMP;
+    g_CurrentAction->unk200 = &g_BattleWork.turn[arg0];
+
+    if (arg0 < NUM_PARTY) {
+        g_CurrentAction->unk204 = &g_BattleWork.party[arg0];
+    } else {
+        g_CurrentAction->unk204 = (void*)-1;
+    }
+
+    g_CurrentAction->unk248 = -1;
+    g_CurrentAction->unk24C = -1;
+    g_CurrentAction->unk250 = -1;
+
+    func_800ACA24();
+
+    if (g_CurrentAction->power == 0) {
+        g_CurrentAction->unk224 = 0x33;
+    }
+
+    if (func_800ACE88()) {
+        g_CurrentAction->unk244 = 0;
+        for (i = 0; i < 3; i++) {
+            g_CurrentAction->unk238[i] = g_CurrentAction->unk80[i];
+            if (i == 0 && (g_CurrentAction->unk228 & STATUS_PETRIFY)) {
+                g_CurrentAction->unk238[i] = 0;
+            }
+            g_CurrentAction->unk244 |= g_CurrentAction->unk238[i];
+        }
+    } else if (g_CurrentAction->power == 0) {
+        g_CurrentAction->unk218 |= 1;
+    }
+
+    g_CurrentAction->unk22C =
+        BattleGetStatusProtectionMask(g_CurrentAction->targetId, 1, g_CurrentAction->unk238[1] & 1);
+    if (g_CurrentAction->unk6C & 0x400) {
+        if (!(g_CurrentAction->unk6C & 4)) {
+            g_CurrentAction->targetDefense =
+                BattleApplyStatMult(arg0, g_BattleState.combatant[arg0].physDefence, STAT_MULT_PHYS_DEFENCE);
+        } else {
+            g_CurrentAction->targetDefense =
+                BattleApplyStatMult(arg0, g_BattleState.combatant[arg0].magDefence, STAT_MULT_MAG_DEFENCE);
+        }
+    }
+
+    if (g_CurrentAction->targetDefense > 0x200) {
+        g_CurrentAction->targetDefense = 0x200;
+    }
+
+    if (arg0 >= START_ENEMY) {
+        g_CurrentAction->unk20C = g_BattleData.activeEncounter.formation[arg0 - START_ENEMY].enemyID;
+    }
+}
 
 void func_800ACA24(void) {
     g_CurrentAction->unk238[0] = 0;
