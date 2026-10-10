@@ -2075,7 +2075,47 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle", BattleActionType09);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800AB308);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800AB480);
+void func_800AB480(void) {
+    if (g_CurrentAction->unk230 & 0x40) {
+        g_CurrentAction->damageFlags ^= 1;
+    } else {
+        if (g_CurrentAction->unk230 & 4) {
+            g_CurrentAction->tmpDamage *= 2;
+        }
+        if (g_CurrentAction->unk230 & 0x10) {
+            g_CurrentAction->tmpDamage++;
+            g_CurrentAction->tmpDamage >>= 1;
+        }
+    }
+
+    if (g_CurrentAction->unk230 & 1) {
+        if (g_CurrentAction->unk228 & 1) {
+            g_CurrentAction->unk218 |= 3;
+            func_800ACA24();
+        } else {
+            g_CurrentAction->unk250 = -2;
+            g_CurrentAction->unk238 |= 1;
+            g_CurrentAction->unk23C &= ~1;
+            g_CurrentAction->unk218 &= ~2;
+            g_CurrentAction->damageFlags &= ~1;
+        }
+    } else if (g_CurrentAction->unk230 & 0x80) {
+        g_BattleState.combatant[g_CurrentAction->targetId].curHP =
+            g_BattleState.combatant[g_CurrentAction->targetId].maxHP;
+        g_BattleState.combatant[g_CurrentAction->targetId].curMP =
+            g_BattleState.combatant[g_CurrentAction->targetId].maxMP;
+
+        g_CurrentAction->damageFlags = 1;
+        g_CurrentAction->unk250 = -3;
+        g_CurrentAction->unk218 &= ~2;
+        g_CurrentAction->unk238 &= ~1;
+    } else if (g_CurrentAction->unk230 & 0x20) {
+        if ((g_CurrentAction->unk244 != 0) || (g_CurrentAction->elements & 8)) {
+            g_CurrentAction->unk218 |= 1;
+        }
+        func_800ACA24();
+    }
+}
 
 static void BattleDropDyingEnemiesFromTargets(void) {
     s32 mask;
