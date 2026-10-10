@@ -573,9 +573,7 @@ typedef struct {
     /* 0x22C */ s32 unk22C;
     /* 0x230 */ s32 unk230;
     /* 0x234 */ s32 unk234;
-    /* 0x238 */ s32 unk238;
-    /* 0x23C */ s32 unk23C;
-    /* 0x240 */ s32 unk240;
+    /* 0x238 */ s32 unk238[3];
     /* 0x244 */ s32 unk244;
     /* 0x248 */ s32 unk248;
     /* 0x24C */ s32 unk24C;

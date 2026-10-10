@@ -2074,16 +2074,16 @@ void func_800AB308(void) {
     s32 unk23C;
 
     if (g_CurrentAction->unk230 & 0x40) {
-        unk23C = g_CurrentAction->unk23C;
-        g_CurrentAction->unk23C = g_CurrentAction->unk238;
-        g_CurrentAction->unk238 = unk23C;
+        unk23C = g_CurrentAction->unk238[1];
+        g_CurrentAction->unk238[1] = g_CurrentAction->unk238[0];
+        g_CurrentAction->unk238[0] = unk23C;
 
         if (unk23C & 1) {
-            g_CurrentAction->unk238 = unk23C & ~1;
+            g_CurrentAction->unk238[0] = unk23C & ~1;
             g_CurrentAction->unk230 = 1;
         }
-        if (g_CurrentAction->unk23C & 1) {
-            g_CurrentAction->unk23C &= ~1;
+        if (g_CurrentAction->unk238[1] & 1) {
+            g_CurrentAction->unk238[1] &= ~1;
             g_CurrentAction->unk230 = 0x80;
         }
     }
@@ -2128,8 +2128,8 @@ void func_800AB480(void) {
             func_800ACA24();
         } else {
             g_CurrentAction->unk250 = -2;
-            g_CurrentAction->unk238 |= 1;
-            g_CurrentAction->unk23C &= ~1;
+            g_CurrentAction->unk238[0] |= 1;
+            g_CurrentAction->unk238[1] &= ~1;
             g_CurrentAction->unk218 &= ~2;
             g_CurrentAction->damageFlags &= ~1;
         }
@@ -2142,7 +2142,7 @@ void func_800AB480(void) {
         g_CurrentAction->damageFlags = 1;
         g_CurrentAction->unk250 = -3;
         g_CurrentAction->unk218 &= ~2;
-        g_CurrentAction->unk238 &= ~1;
+        g_CurrentAction->unk238[0] &= ~1;
     } else if (g_CurrentAction->unk230 & 0x20) {
         if ((g_CurrentAction->unk244 != 0) || (g_CurrentAction->elements & 8)) {
             g_CurrentAction->unk218 |= 1;
@@ -2371,7 +2371,7 @@ static void BattleMainDmgCalculation(s32 arg0, s32 arg1) {
             } else if (entry->unk28 != 0) {
                 entry->unk28--;
             } else {
-                g_CurrentAction->unk23C |= 0x40000;
+                g_CurrentAction->unk238[1] |= 0x40000;
             }
             g_CurrentAction->unk218 |= 2;
             act->flags |= 2;
@@ -2452,14 +2452,14 @@ static void BattleMainDmgCalculation(s32 arg0, s32 arg1) {
         newStatus = oldStatus;
         for (i = 0; i < 2; i++) {
             for (j = 0; j < 2; j++) {
-                if (g_CurrentAction->unk238 & D_800A03A0[i][j]) {
+                if (g_CurrentAction->unk238[0] & D_800A03A0[i][j]) {
                     if ((i == 1) && (newStatus & D_800A03A0[1][j ^ 1])) {
                         // e.g. casting Fury on an already-Sad target just
                         // cancels the Sadness instead of stacking
-                        g_CurrentAction->unk238 &= ~D_800A03A0[1][j];
+                        g_CurrentAction->unk238[0] &= ~D_800A03A0[1][j];
                     }
                     // queue the paired status for removal
-                    g_CurrentAction->unk23C |= D_800A03A0[i][j ^ 1];
+                    g_CurrentAction->unk238[1] |= D_800A03A0[i][j ^ 1];
                 }
             }
         }
@@ -2467,9 +2467,9 @@ static void BattleMainDmgCalculation(s32 arg0, s32 arg1) {
             mask |= 1;
         }
         // apply / remove / toggle against the immunity mask
-        newStatus |= g_CurrentAction->unk238 & mask;
-        newStatus &= ~(g_CurrentAction->unk23C & mask);
-        newStatus ^= g_CurrentAction->unk240 & mask;
+        newStatus |= g_CurrentAction->unk238[0] & mask;
+        newStatus &= ~(g_CurrentAction->unk238[1] & mask);
+        newStatus ^= g_CurrentAction->unk238[2] & mask;
         g_CurrentAction->unk228 = newStatus;
         g_BattleState.combatant[arg1].status = newStatus;
         if (oldStatus != newStatus) {
@@ -2561,9 +2561,9 @@ void func_800AC6B4(s32 arg0) {
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", BattleCalcTargStats);
 
 void func_800ACA24(void) {
-    g_CurrentAction->unk238 = 0;
-    g_CurrentAction->unk23C = 0;
-    g_CurrentAction->unk240 = 0;
+    g_CurrentAction->unk238[0] = 0;
+    g_CurrentAction->unk238[1] = 0;
+    g_CurrentAction->unk238[2] = 0;
     g_CurrentAction->unk244 = 0;
     g_CurrentAction->unk230 = 0;
     g_CurrentAction->tmpDamage = 0;
@@ -3728,13 +3728,13 @@ void BattleRollPhysicalHit(void) {
     // Auto-hit if the target has a vulnerable status; sleep, confuse, and manipulate are removed on hit
     if (g_CurrentAction->unk228 & vulnerableStatusMask) {
         if (g_CurrentAction->unk228 & STATUS_SLEEP) {
-            g_CurrentAction->unk23C |= STATUS_SLEEP;
+            g_CurrentAction->unk238[1] |= STATUS_SLEEP;
         }
         if (g_CurrentAction->unk228 & STATUS_CONFU) {
-            g_CurrentAction->unk23C |= STATUS_CONFU;
+            g_CurrentAction->unk238[1] |= STATUS_CONFU;
         }
         if (g_CurrentAction->unk228 & STATUS_MANIPULATE) {
-            g_CurrentAction->unk23C |= STATUS_MANIPULATE;
+            g_CurrentAction->unk238[1] |= STATUS_MANIPULATE;
         }
         hitChance = 255;
     }
