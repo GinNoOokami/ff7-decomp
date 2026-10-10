@@ -2070,7 +2070,44 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800AA950);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", BattleActionType09);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800AB308);
+void func_800AB308(void) {
+    s32 unk23C;
+
+    if (g_CurrentAction->unk230 & 0x40) {
+        unk23C = g_CurrentAction->unk23C;
+        g_CurrentAction->unk23C = g_CurrentAction->unk238;
+        g_CurrentAction->unk238 = unk23C;
+
+        if (unk23C & 1) {
+            g_CurrentAction->unk238 = unk23C & ~1;
+            g_CurrentAction->unk230 = 1;
+        }
+        if (g_CurrentAction->unk23C & 1) {
+            g_CurrentAction->unk23C &= ~1;
+            g_CurrentAction->unk230 = 0x80;
+        }
+    }
+
+    if (g_CurrentAction->unk230 & 1) {
+        switch (g_CurrentAction->unkA4) {
+        case 3:
+        case 4:
+            if ((u8)SysGetRandomByteRange(0x20) >= g_CurrentAction->power) {
+                g_CurrentAction->unk230 = (g_CurrentAction->unk230 & ~1) | 0x20;
+            }
+            break;
+        }
+    }
+
+    if (g_CurrentAction->power == 0) {
+        if (g_CurrentAction->unk230 & 4) {
+            g_CurrentAction->unk260 *= 2;
+        }
+        if (g_CurrentAction->unk230 & 0x10) {
+            g_CurrentAction->unk260 >>= 1;
+        }
+    }
+}
 
 void func_800AB480(void) {
     if (g_CurrentAction->unk230 & 0x40) {
