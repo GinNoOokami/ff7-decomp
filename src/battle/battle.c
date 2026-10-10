@@ -1729,7 +1729,7 @@ const s32 D_800A029C[] = {
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", BattleActionType07);
 
 void BattlePrepareTmpForManip(void) {
-    g_CurrentAction->unk80 = 0x400000;
+    g_CurrentAction->unk80[0] = 0x400000;
     g_CurrentAction->unkE4 = 0x59;
 }
 
@@ -1840,7 +1840,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A8A6C);
 void BattleActionType18(void) {
     g_CurrentAction->unk8C = 0xFF;
     g_CurrentAction->unk40 = 0xB0;
-    g_CurrentAction->unk80 |= 1;
+    g_CurrentAction->unk80[0] |= 1;
     g_CurrentAction->unk3C = (s32)g_CurrentAction->unk3C >> 1;
 }
 
@@ -1872,26 +1872,23 @@ static void SetActionStatusChange(u32 arg0, s32 statusMask) {
     u8 unused[8]; // retail reserves it, nothing reads it
     Unk800A8D04* act = g_CurrentAction;
     s32 idx = arg0 >> 6;
-    s32 v;
-    s32 slot;
-    s32 tmp;
+    s32 chance;
+    s32 mask;
 
-    act->unk80 = 0;
-    act->unk84 = 0;
-    act->unk88 = 0;
+    act->unk80[0] = 0;
+    act->unk80[1] = 0;
+    act->unk80[2] = 0;
 
     if (idx < 3) {
-        v = (arg0 & 0x3F) * 4;
-        slot = idx;
-        tmp = 0x80000000;
-
+        chance = (arg0 & 0x3F) * 4;
+        mask = 0x80000000;
         if (statusMask < 0) {
-            act->unk80 = tmp;
+            act->unk80[0] = mask;
             g_BattleSceneContext.imprisonedType = statusMask & 3;
         } else {
-            act->unk8C = v;
-            tmp = (s32)act;
-            *(s32*)((slot * 4) + tmp + 0x80) = statusMask;
+            mask = statusMask;
+            act->unk8C = chance;
+            act->unk80[idx] = mask;
         }
     }
 }
@@ -2674,7 +2671,8 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800ACE88);
 static void BattleQueueUnassignedResultDisplay(BattleQueueTargetEntry* entry) {
     s8 impactEffectId;
 
-    if ((g_CurrentAction->unk80 | g_CurrentAction->unk84 | g_CurrentAction->unk88) & ~g_CurrentAction->unk22C) {
+    if ((g_CurrentAction->unk80[0] | g_CurrentAction->unk80[1] | g_CurrentAction->unk80[2]) &
+        ~g_CurrentAction->unk22C) {
         impactEffectId = entry->extraDataIndex;
         if (impactEffectId == -1) {
             BattleCreateImpactData(entry, -1, 0, -1, impactEffectId);
@@ -3693,7 +3691,7 @@ void BattleRollMagicalHit(void) {
     }
 
     // Auto-hit if the ability inflicts no status and the target has a vulnerable status
-    if (!g_CurrentAction->unk80 && (g_CurrentAction->unk228 & vulnerableStatusMask)) {
+    if (!g_CurrentAction->unk80[0] && (g_CurrentAction->unk228 & vulnerableStatusMask)) {
         return;
     }
 
